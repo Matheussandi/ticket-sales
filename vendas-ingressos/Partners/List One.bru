@@ -1,0 +1,16 @@
+meta {
+  name: List One
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseURL}}/partners/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

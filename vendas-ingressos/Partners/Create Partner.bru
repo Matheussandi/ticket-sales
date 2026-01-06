@@ -1,0 +1,29 @@
+meta {
+  name: Create Partner
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseURL}}/partners
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "João",
+    "email": "Joazinho@email.com",
+    "passowrd": "123",
+    "company_name": "Não sei"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

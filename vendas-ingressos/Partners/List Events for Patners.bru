@@ -1,0 +1,16 @@
+meta {
+  name: List Events for Patners
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseURL}}/partners/events
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

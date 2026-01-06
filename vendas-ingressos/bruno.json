@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "vendas-ingressos",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
