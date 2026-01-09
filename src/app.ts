@@ -42,15 +42,16 @@ app.post("/partners", async (req, res) => {
     const userId = userResult.insertId;
 
     const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
-      "INSERT INTO partners (user_id, email, password, company_name, created_at) VALUES (?, ?, ?, ?, ?)",
-      [userId, email, hashedPassword, company_name, createdAt]
+      "INSERT INTO partners (user_id, company_name, created_at) VALUES (?, ?, ?)",
+      [userId, company_name, createdAt]
     );
 
     res
       .status(201)
-      .send({ id: partnerResult.insertId, userId, company_name, createdAt });
+      .send({ id: partnerResult.insertId, user_id: userId, company_name, created_at: createdAt });
   } catch (error) {
     console.error("Error creating partner:", error);
+    res.status(500).send({ error: "Failed to create partner" });
   } finally {
     await connection.end();
   }
@@ -89,6 +90,17 @@ app.get("/events/:eventId", (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  const connection = await createConnection();
+
+  await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
+  await connection.execute("TRUNCATE TABLE users");
+  await connection.execute("TRUNCATE TABLE partners");
+  await connection.execute("TRUNCATE TABLE customers");
+  await connection.execute("TRUNCATE TABLE events");
+  await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
+
+  // await connection.end();
+
   console.log(`Server is running on port ${PORT}`);
 });
