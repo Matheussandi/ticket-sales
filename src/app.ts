@@ -188,7 +188,7 @@ app.post("/partners/events", async (req, res) => {
     );
 
     const partner = partnerRows.length > 0 ? partnerRows[0] : null;
-    
+
     if (!partner) {
       return res.status(403).json({ message: "Not authorized" });
     }
@@ -217,28 +217,147 @@ app.post("/partners/events", async (req, res) => {
   }
 });
 
-app.get("/partners/events", (req, res) => {});
+app.get("/partners/events", async (req, res) => {
+  const userId = req.user!.id;
 
-app.get("/partners/events/:eventId", (req, res) => {
-  const { eventId } = req.params;
-  console.log(`Event ID requested: ${eventId}`);
-  res.send("Event details logged");
+  const connection = await createConnection();
+
+  try {
+    const [partnerRows] = await connection.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM partners WHERE user_id = ?",
+      [userId]
+    );
+
+    const partner = partnerRows.length > 0 ? partnerRows[0] : null;
+
+    if (!partner) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM events WHERE partner_id = ?",
+      [partner.id]
+    );
+
+    res.status(200).json(eventRows);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create event" });
+  } finally {
+    await connection.end();
+  }
 });
 
-app.post("/events", (req, res) => {
+app.get("/partners/events/:eventId", async (req, res) => {
+  const { eventId } = req.params;
+
+  const userId = req.user!.id;
+
+  const connection = await createConnection();
+
+  try {
+    const [partnerRows] = await connection.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM partners WHERE user_id = ?",
+      [userId]
+    );
+
+    const partner = partnerRows.length > 0 ? partnerRows[0] : null;
+
+    if (!partner) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM events WHERE id = ? AND partner_id = ?",
+      [eventId, partner.id]
+    );
+
+    const event = eventRows.length > 0 ? eventRows[0] : null;
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json(eventRows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve event" });
+  } finally {
+    await connection.end();
+  }
+});
+
+app.post("/events", async (req, res) => {
   const { name, description, date, location } = req.body;
-  res.send("Event creation logged");
+
+  const connection = await createConnection();
+
+  try {
+    const eventDate = new Date(date);
+    const createdAt = new Date();
+
+    const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
+      "INSERT INTO events (name, description, date, location, created_at) VALUES (?, ?, ?, ?, ?)",
+      [name, description, eventDate, location, createdAt]
+    );
+
+    res.status(201).json({
+      id: eventResult.insertId,
+      name,
+      description,
+      date: eventDate,
+      location,
+      created_at: createdAt,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create event" });
+  } finally {
+    await connection.end();
+  }
 });
 
-app.get("/events", (req, res) => {});
+app.get("/events", async (req, res) => {
+  const connection = await createConnection();
 
-app.get("/events/:eventId", (req, res) => {
+  try {
+    const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM events"
+    );
+
+    res.status(200).json(eventRows);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create event" });
+  } finally {
+    await connection.end();
+  }
+});
+
+app.get("/events/:eventId", async (req, res) => {
   const { eventId } = req.params;
-  console.log(`Event ID requested: ${eventId}`);
-  res.send("Event details logged");
+
+  const connection = await createConnection();
+
+  try {
+    const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM events WHERE id = ?",
+      [eventId]
+    );
+
+    const event = eventRows.length > 0 ? eventRows[0] : null;
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json(event);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create event" });
+  } finally {
+    await connection.end();
+  }
 });
 
 const PORT = process.env.PORT || 3000;
+
+export default app;
 
 app.listen(PORT, async () => {
   const connection = await createConnection();
