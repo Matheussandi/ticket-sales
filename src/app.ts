@@ -19,17 +19,17 @@ app.use(express.json());
 
 const unprotectedPaths = [
   { method: "POST", path: "/auth/login" },
-  { method: "POST", path: "/customers" },
-  { method: "POST", path: "/partners" },
+  { method: "POST", path: "/customers/register" },
+  { method: "POST", path: "/partners/register" },
   { method: "GET", path: "/events" },
 ];
 
 app.use(async (req, res, next) => {
-  const isUnprotected = unprotectedPaths.some(
+  const isUnprotectedRoute = unprotectedPaths.some(
     (route) => route.method === req.method && route.path.startsWith(req.path)
   );
 
-  if (isUnprotected) {
+  if (isUnprotectedRoute) {
     return next();
   }
 
@@ -103,7 +103,7 @@ app.post("/auth/login", async (req, res) => {
   }
 });
 
-app.post("/partners", async (req, res) => {
+app.post("/partners/register", async (req, res) => {
   const { name, email, password, company_name } = req.body;
 
   const connection = await createConnection();
@@ -132,14 +132,13 @@ app.post("/partners", async (req, res) => {
       created_at: createdAt,
     });
   } catch (error) {
-    console.error("Error creating partner:", error);
     res.status(500).send({ error: "Failed to create partner" });
   } finally {
     await connection.end();
   }
 });
 
-app.post("/customers", async (req, res) => {
+app.post("/customers/register", async (req, res) => {
   const { name, email, password, address, phone } = req.body;
 
   const connection = await createConnection();
