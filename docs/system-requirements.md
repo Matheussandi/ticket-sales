@@ -4,8 +4,6 @@
 
 O sistema será uma **API REST** projetada para permitir a criação, gerenciamento e venda de ingressos para eventos por meio de parceiros. Ele será escalável para lidar com milhares de acessos simultâneos.
 
----
-
 ## Regras de Negócio
 
 ### 1. Gerenciamento de Tickets
@@ -39,8 +37,6 @@ O sistema será uma **API REST** projetada para permitir a criação, gerenciame
 - **Clientes serão registrados no sistema e poderão comprar tickets para eventos.**
 - **Clientes podem visualizar os eventos disponíveis e comprar tickets.**
 - **Clientes podem cancelar suas compras e visualizar o histórico de compras.**
-
----
 
 ## Requisitos Funcionais
 
@@ -79,8 +75,6 @@ O sistema será uma **API REST** projetada para permitir a criação, gerenciame
 - O sistema deve permitir que clientes consultem suas compras realizadas.
 - O sistema deve permitir que clientes visualizem o histórico completo de suas compras.
 
----
-
 ## Requisitos Não Funcionais
 
 ### RNF01 - Escalabilidade
@@ -97,8 +91,6 @@ O sistema será uma **API REST** projetada para permitir a criação, gerenciame
 
 ### RNF05 - Performance
 - O sistema deve responder às requisições em tempo adequado, mesmo sob alta carga.
-
----
 
 ## Fluxos Principais
 
@@ -122,16 +114,12 @@ O sistema será uma **API REST** projetada para permitir a criação, gerenciame
 4. Sistema registra alteração de status no histórico
 5. Tickets ficam disponíveis para nova compra
 
----
-
 ## Estados dos Tickets
 
 - **disponível**: Ticket criado e disponível para compra
 - **reservado**: Ticket temporariamente bloqueado durante processo de compra
 - **vendido**: Ticket comprado por um cliente
 - **cancelado**: Ticket de uma compra cancelada (volta para disponível)
-
----
 
 ## Atores do Sistema
 
@@ -150,8 +138,6 @@ O sistema será uma **API REST** projetada para permitir a criação, gerenciame
 - Consulta suas compras realizadas
 - Visualiza histórico completo de compras
 - Cancela compras
-
----
 
 ## Considerações de Segurança
 

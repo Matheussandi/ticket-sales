@@ -5,7 +5,7 @@
   "main": "src/app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node dist/app.js",
+    "start": "node --env-file .env --experimental-strip-types src/app.ts",
     "dev": "node --env-file .env --experimental-strip-types --no-warnings --watch src/app.ts"
   },
   "keywords": [],
