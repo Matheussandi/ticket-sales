@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc && node dist/app.js",
-    "dev": "node --loader ts-node/esm src/app.ts"
+    "dev": "node --env-file .env --experimental-strip-types --no-warnings --watch src/app.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,11 +15,13 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.16.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
