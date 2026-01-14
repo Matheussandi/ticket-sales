@@ -1,6 +1,6 @@
 import * as mysql from "mysql2/promise";
 import bcrypt from "bcrypt";
-import { createConnection } from "../database.ts";
+import { Database } from "../database.ts";
 
 export class PartnerService {
   async register(data: {
@@ -11,51 +11,42 @@ export class PartnerService {
   }) {
     const { name, email, password, company_name } = data;
 
-    const connection = await createConnection();
+    const connection = Database.getInstance();
 
-    try {
-      const createdAt = new Date();
-      const hashedPassword = bcrypt.hashSync(password, 10);
+    const createdAt = new Date();
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
-      const [userResult] = await connection.execute<mysql.ResultSetHeader>(
-        "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)",
-        [name, email, hashedPassword, createdAt]
-      );
+    const [userResult] = await connection.execute<mysql.ResultSetHeader>(
+      "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)",
+      [name, email, hashedPassword, createdAt]
+    );
 
-      const userId = userResult.insertId;
+    const userId = userResult.insertId;
 
-      const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
-        "INSERT INTO partners (user_id, company_name, created_at) VALUES (?, ?, ?)",
-        [userId, company_name, createdAt]
-      );
+    const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
+      "INSERT INTO partners (user_id, company_name, created_at) VALUES (?, ?, ?)",
+      [userId, company_name, createdAt]
+    );
 
-      return {
-        id: partnerResult.insertId,
-        name,
-        user_id: userId,
-        company_name,
-        created_at: createdAt,
-      };
-    } catch (error) {
-      throw new Error("Failed to create partner");
-    } finally {
-      await connection.end();
-    }
+    return {
+      id: partnerResult.insertId,
+      name,
+      user_id: userId,
+      company_name,
+      created_at: createdAt,
+    };
   }
 
   async findByUserId(userId: number) {
-    const connection = await createConnection();
-    try {
-      const [partnerRows] = await connection.execute<mysql.RowDataPacket[]>(
-        "SELECT * FROM partners WHERE user_id = ?",
-        [userId]
-      );
+    const connection = Database.getInstance();
 
-      const partner = partnerRows.length > 0 ? partnerRows[0] : null;
+    const [partnerRows] = await connection.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM partners WHERE user_id = ?",
+      [userId]
+    );
 
-      return partner;
-    } finally {
-      await connection.end();
-    }
+    const partner = partnerRows.length > 0 ? partnerRows[0] : null;
+
+    return partner;
   }
 }

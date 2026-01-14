@@ -1,5 +1,5 @@
 import * as mysql from "mysql2/promise";
-import { createConnection } from "../database.ts";
+import { Database } from "../database.ts";
 
 export class UserModel {
   id: number;
@@ -17,7 +17,7 @@ export class UserModel {
     email: string;
     password: string;
   }): Promise<UserModel> {
-    const connection = await createConnection();
+    const connection = Database.getInstance();
 
     const { name, email, password } = data;
 
@@ -33,7 +33,7 @@ export class UserModel {
     } catch (error) {
       throw new Error("Database connection error");
     } finally {
-      await connection.end();
+      // Do not close the connection pool here
     }
   }
 
@@ -45,13 +45,18 @@ export class UserModel {
     // Logic to delete a user from the database
   }
 
-  findAll(): UserModel[] {
+  static findAll(): UserModel[] {
     // Logic to retrieve all users from the database
     return [];
   }
 
-  findById(id: number): UserModel | null {
+  static findById(id: number): UserModel | null {
     // Logic to find a user by ID in the database
+    return null;
+  }
+
+  static findByEmail(email: string): Promise<UserModel> {
+    // Logic to find a user by email in the database
     return null;
   }
 

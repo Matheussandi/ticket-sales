@@ -1,14 +1,14 @@
 import express from "express";
-import * as mysql from "mysql2/promise";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createConnection } from "./database.ts";
 
-import { authRouter } from "./controller/auth-controller.ts";
-import { partnerRouter } from "./controller/partner-controller.ts";
 import { customerRouter } from "./controller/customer-controller.ts";
+import { partnerRouter } from "./controller/partner-controller.ts";
 import { eventsRouter } from "./controller/events-controller.ts";
+import { authRouter } from "./controller/auth-controller.ts";
+
 import { UserService } from "./services/user-service.ts";
+
+import { Database } from "./database.ts";
 
 const app = express();
 
@@ -70,7 +70,7 @@ const PORT = process.env.PORT || 3000;
 export default app;
 
 app.listen(PORT, async () => {
-  const connection = await createConnection();
+  const connection = Database.getInstance();
 
   await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
   await connection.execute("TRUNCATE TABLE users");
@@ -78,8 +78,5 @@ app.listen(PORT, async () => {
   await connection.execute("TRUNCATE TABLE customers");
   await connection.execute("TRUNCATE TABLE events");
   await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
-
-  // await connection.end();
-
   console.log(`Server is running on port ${PORT}`);
 });

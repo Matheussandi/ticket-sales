@@ -1,37 +1,31 @@
 import { Router } from "express";
 import * as mysql from "mysql2/promise";
-import { createConnection } from "../database.ts";
 import { EventService } from "../services/event-service.ts";
+import { Database } from "../database.ts";
 
 export const eventsRouter = Router();
 
 eventsRouter.post("/", async (req, res) => {
   const { name, description, date, location } = req.body;
 
-  const connection = await createConnection();
+  const connection = Database.getInstance();
 
-  try {
-    const eventDate = new Date(date);
-    const createdAt = new Date();
+  const eventDate = new Date(date);
+  const createdAt = new Date();
 
-    const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
-      "INSERT INTO events (name, description, date, location, created_at) VALUES (?, ?, ?, ?, ?)",
-      [name, description, eventDate, location, createdAt]
-    );
+  const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
+    "INSERT INTO events (name, description, date, location, created_at) VALUES (?, ?, ?, ?, ?)",
+    [name, description, eventDate, location, createdAt]
+  );
 
-    res.status(201).json({
-      id: eventResult.insertId,
-      name,
-      description,
-      date: eventDate,
-      location,
-      created_at: createdAt,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to create event" });
-  } finally {
-    await connection.end();
-  }
+  res.status(201).json({
+    id: eventResult.insertId,
+    name,
+    description,
+    date: eventDate,
+    location,
+    created_at: createdAt,
+  });
 });
 
 eventsRouter.get("/", async (req, res) => {

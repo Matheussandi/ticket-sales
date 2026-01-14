@@ -1,8 +1,4 @@
 import { Router } from "express";
-import * as mysql from "mysql2/promise";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { createConnection } from "../database.ts";
 import { AuthService } from "../services/auth-service.ts";
 
 export const authRouter = Router();

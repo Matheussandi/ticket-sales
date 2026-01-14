@@ -1,6 +1,6 @@
 import * as mysql from "mysql2/promise";
 import bcrypt from "bcrypt";
-import { createConnection } from "../database.ts";
+import { Database } from "../database.ts";
 import { UserModel } from "../model/user-model.ts";
 
 export class CustomerService {
@@ -13,37 +13,31 @@ export class CustomerService {
   }) {
     const { name, email, password, address, phone } = data;
 
-    const connection = await createConnection();
+    const connection = Database.getInstance();
 
-    try {
-      const createdAt = new Date();
-      const hashedPassword = bcrypt.hashSync(password, 10);
+    const createdAt = new Date();
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
-      const userModel = await UserModel.create({
-        name,
-        email,
-        password: hashedPassword,
-      });
+    const userModel = await UserModel.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
 
-      const userId = userModel.id;
+    const userId = userModel.id;
 
-      const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
-        "INSERT INTO customers (user_id, address, phone, created_at) VALUES (?, ?, ?, ?)",
-        [userId, address, phone, createdAt]
-      );
+    const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
+      "INSERT INTO customers (user_id, address, phone, created_at) VALUES (?, ?, ?, ?)",
+      [userId, address, phone, createdAt]
+    );
 
-      return {
-        id: partnerResult.insertId,
-        name,
-        user_id: userId,
-        address,
-        phone,
-        created_at: createdAt,
-      };
-    } catch (error) {
-      throw new Error("Database connection error");
-    } finally {
-      await connection.end();
-    }
+    return {
+      id: partnerResult.insertId,
+      name,
+      user_id: userId,
+      address,
+      phone,
+      created_at: createdAt,
+    };
   }
 }
