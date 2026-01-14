@@ -1,5 +1,6 @@
 import * as mysql from "mysql2/promise";
 import { Database } from "../database.ts";
+import bycript from "bcrypt";
 
 export class UserModel {
   id: number;
@@ -12,52 +13,93 @@ export class UserModel {
     this.fill(data);
   }
 
-  static async create(data: {
-    name: string;
-    email: string;
-    password: string;
-  }): Promise<UserModel> {
-    const connection = Database.getInstance();
+  static async create(
+    data: {
+      name: string;
+      email: string;
+      password: string;
+    },
+    options?: { connection?: mysql.Connection }
+  ): Promise<UserModel> {
+    const db = options?.connection ?? Database.getInstance();
 
     const { name, email, password } = data;
 
-    try {
-      const createdAt = new Date();
+    const createdAt = new Date();
+    const hashedPassword = UserModel.hashPassword(password);
 
-      const [userResult] = await connection.execute<mysql.ResultSetHeader>(
-        "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)",
-        [name, email, password, createdAt]
-      );
+    const [userResult] = await db.execute<mysql.ResultSetHeader>(
+      "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)",
+      [name, email, hashedPassword, createdAt]
+    );
 
-      return new UserModel({...data, created_at: createdAt, id: userResult.insertId});
-    } catch (error) {
-      throw new Error("Database connection error");
-    } finally {
-      // Do not close the connection pool here
+    const user = new UserModel({
+      ...data,
+      password: hashedPassword,
+      created_at: createdAt,
+      id: userResult.insertId,
+    });
+
+    return user;
+  }
+
+  static hashPassword(password: string): string {
+    return bycript.hashSync(password, 10);
+  }
+
+  static comparePassword(
+    plainPassword: string,
+    hashedPassword: string
+  ): boolean {
+    return bycript.compareSync(plainPassword, hashedPassword);
+  }
+
+  static async findById(id: number): Promise<UserModel | null> {
+    const db = Database.getInstance();
+    const [rows] = await db.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM users WHERE id = ?",
+      [id]
+    );
+    return rows.length > 0 ? new UserModel(rows[0] as UserModel) : null;
+  }
+
+  static async findByEmail(email: string): Promise<UserModel | null> {
+    const db = Database.getInstance();
+    const [rows] = await db.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
+    return rows.length > 0 ? new UserModel(rows[0] as UserModel) : null;
+  }
+
+  static async findAll(): Promise<UserModel[]> {
+    const db = Database.getInstance();
+    const [rows] = await db.execute<mysql.RowDataPacket[]>(
+      "SELECT * FROM users"
+    );
+    return rows.map((row) => new UserModel(row as UserModel));
+  }
+
+  async update(): Promise<void> {
+    const db = Database.getInstance();
+    const [result] = await db.execute<mysql.ResultSetHeader>(
+      "UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?",
+      [this.name, this.email, this.password, this.id]
+    );
+    if (result.affectedRows === 0) {
+      throw new Error("User not found");
     }
   }
 
-  update(): void {
-    // Logic to update user data in the database
-  }
-
-  delete(): void {
-    // Logic to delete a user from the database
-  }
-
-  static findAll(): UserModel[] {
-    // Logic to retrieve all users from the database
-    return [];
-  }
-
-  static findById(id: number): UserModel | null {
-    // Logic to find a user by ID in the database
-    return null;
-  }
-
-  static findByEmail(email: string): Promise<UserModel> {
-    // Logic to find a user by email in the database
-    return null;
+  async delete(): Promise<void> {
+    const db = Database.getInstance();
+    const [result] = await db.execute<mysql.ResultSetHeader>(
+      "DELETE FROM users WHERE id = ?",
+      [this.id]
+    );
+    if (result.affectedRows === 0) {
+      throw new Error("User not found");
+    }
   }
 
   // Método auxiliar para preencher o modelo com dados

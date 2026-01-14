@@ -13,28 +13,37 @@ export class PartnerService {
 
     const connection = Database.getInstance();
 
-    const createdAt = new Date();
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    try {
+      await connection.beginTransaction();
 
-    const [userResult] = await connection.execute<mysql.ResultSetHeader>(
-      "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)",
-      [name, email, hashedPassword, createdAt]
-    );
+      const createdAt = new Date();
+      const hashedPassword = bcrypt.hashSync(password, 10);
 
-    const userId = userResult.insertId;
+      const [userResult] = await connection.execute<mysql.ResultSetHeader>(
+        "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)",
+        [name, email, hashedPassword, createdAt]
+      );
 
-    const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
-      "INSERT INTO partners (user_id, company_name, created_at) VALUES (?, ?, ?)",
-      [userId, company_name, createdAt]
-    );
+      const userId = userResult.insertId;
 
-    return {
-      id: partnerResult.insertId,
-      name,
-      user_id: userId,
-      company_name,
-      created_at: createdAt,
-    };
+      const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
+        "INSERT INTO partners (user_id, company_name, created_at) VALUES (?, ?, ?)",
+        [userId, company_name, createdAt]
+      );
+
+      await connection.commit();
+
+      return {
+        id: partnerResult.insertId,
+        name,
+        user_id: userId,
+        company_name,
+        created_at: createdAt,
+      };
+    } catch (error) {
+      await connection.rollback();
+      throw new Error("Registration failed: " + (error as Error).message);
+    }
   }
 
   async findByUserId(userId: number) {

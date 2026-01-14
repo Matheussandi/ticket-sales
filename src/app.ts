@@ -80,3 +80,9 @@ app.listen(PORT, async () => {
   await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
   console.log(`Server is running on port ${PORT}`);
 });
+
+// MVC - Model-View-Controller (Architecture)
+
+// Application Service - o que quero expor como regras de negócio da aplicação
+// Domain Service - regras de negócio específicas de um domínio
+// Active Record - padrão onde o modelo de dados é responsável por persistir a si mesmo
