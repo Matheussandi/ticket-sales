@@ -1,13 +1,14 @@
 import express from "express";
-import * as mysql from "mysql2/promise";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createConnection } from "./database.ts";
 
-import { authRouter } from "./controller/auth-controller.ts";
-import { partnerRouter } from "./controller/partner-controller.ts";
 import { customerRouter } from "./controller/customer-controller.ts";
+import { partnerRouter } from "./controller/partner-controller.ts";
 import { eventsRouter } from "./controller/events-controller.ts";
+import { authRouter } from "./controller/auth-controller.ts";
+
+import { UserService } from "./services/user-service.ts";
+
+import { Database } from "./database.ts";
 
 const app = express();
 
@@ -40,13 +41,9 @@ app.use(async (req, res, next) => {
       id: number;
       email: string;
     };
-    const connection = await createConnection();
-    const [rows] = await connection.execute<mysql.RowDataPacket[]>(
-      "SELECT * FROM users WHERE id = ?",
-      [payload.id]
-    );
-
-    const user = rows.length > 0 ? rows[0] : null;
+    
+    const userService = new UserService();
+    const user = await userService.findById(payload.id);
 
     if (!user) {
       return res.status(401).json({ error: "User not found" });
@@ -73,7 +70,7 @@ const PORT = process.env.PORT || 3000;
 export default app;
 
 app.listen(PORT, async () => {
-  const connection = await createConnection();
+  const connection = Database.getInstance();
 
   await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
   await connection.execute("TRUNCATE TABLE users");
@@ -81,8 +78,11 @@ app.listen(PORT, async () => {
   await connection.execute("TRUNCATE TABLE customers");
   await connection.execute("TRUNCATE TABLE events");
   await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
-
-  // await connection.end();
-
   console.log(`Server is running on port ${PORT}`);
 });
+
+// MVC - Model-View-Controller (Architecture)
+
+// Application Service - o que quero expor como regras de negócio da aplicação
+// Domain Service - regras de negócio específicas de um domínio
+// Active Record - padrão onde o modelo de dados é responsável por persistir a si mesmo

@@ -1,75 +1,47 @@
 import { Router } from "express";
 import * as mysql from "mysql2/promise";
-import { createConnection } from "../database.ts";
+import { EventService } from "../services/event-service.ts";
+import { Database } from "../database.ts";
 
 export const eventsRouter = Router();
 
 eventsRouter.post("/", async (req, res) => {
   const { name, description, date, location } = req.body;
 
-  const connection = await createConnection();
+  const connection = Database.getInstance();
 
-  try {
-    const eventDate = new Date(date);
-    const createdAt = new Date();
+  const eventDate = new Date(date);
+  const createdAt = new Date();
 
-    const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
-      "INSERT INTO events (name, description, date, location, created_at) VALUES (?, ?, ?, ?, ?)",
-      [name, description, eventDate, location, createdAt]
-    );
+  const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
+    "INSERT INTO events (name, description, date, location, created_at) VALUES (?, ?, ?, ?, ?)",
+    [name, description, eventDate, location, createdAt]
+  );
 
-    res.status(201).json({
-      id: eventResult.insertId,
-      name,
-      description,
-      date: eventDate,
-      location,
-      created_at: createdAt,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to create event" });
-  } finally {
-    await connection.end();
-  }
+  res.status(201).json({
+    id: eventResult.insertId,
+    name,
+    description,
+    date: eventDate,
+    location,
+    created_at: createdAt,
+  });
 });
 
 eventsRouter.get("/", async (req, res) => {
-  const connection = await createConnection();
-
-  try {
-    const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
-      "SELECT * FROM events"
-    );
-
-    res.status(200).json(eventRows);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to create event" });
-  } finally {
-    await connection.end();
-  }
+  const eventService = new EventService();
+  const result = await eventService.findAll();
+  res.status(200).json(result);
 });
 
 eventsRouter.get("/:eventId", async (req, res) => {
   const { eventId } = req.params;
+  const eventService = new EventService();
+  const event = await eventService.findById(Number(eventId));
 
-  const connection = await createConnection();
-
-  try {
-    const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
-      "SELECT * FROM events WHERE id = ?",
-      [eventId]
-    );
-
-    const event = eventRows.length > 0 ? eventRows[0] : null;
-
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-
+  if (event) {
     res.status(200).json(event);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to create event" });
-  } finally {
-    await connection.end();
+  } else {
+    res.status(404).json({ error: "Event not found" });
   }
 });
