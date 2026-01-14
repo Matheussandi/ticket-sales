@@ -1,6 +1,7 @@
 import * as mysql from "mysql2/promise";
 import bcrypt from "bcrypt";
 import { createConnection } from "../database.ts";
+import { UserModel } from "../model/user-model.ts";
 
 export class CustomerService {
   async register(data: {
@@ -18,12 +19,13 @@ export class CustomerService {
       const createdAt = new Date();
       const hashedPassword = bcrypt.hashSync(password, 10);
 
-      const [userResult] = await connection.execute<mysql.ResultSetHeader>(
-        "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)",
-        [name, email, hashedPassword, createdAt]
-      );
+      const userModel = await UserModel.create({
+        name,
+        email,
+        password: hashedPassword,
+      });
 
-      const userId = userResult.insertId;
+      const userId = userModel.id;
 
       const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
         "INSERT INTO customers (user_id, address, phone, created_at) VALUES (?, ?, ?, ?)",

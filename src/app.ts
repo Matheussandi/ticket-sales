@@ -8,6 +8,7 @@ import { authRouter } from "./controller/auth-controller.ts";
 import { partnerRouter } from "./controller/partner-controller.ts";
 import { customerRouter } from "./controller/customer-controller.ts";
 import { eventsRouter } from "./controller/events-controller.ts";
+import { UserService } from "./services/user-service.ts";
 
 const app = express();
 
@@ -40,13 +41,9 @@ app.use(async (req, res, next) => {
       id: number;
       email: string;
     };
-    const connection = await createConnection();
-    const [rows] = await connection.execute<mysql.RowDataPacket[]>(
-      "SELECT * FROM users WHERE id = ?",
-      [payload.id]
-    );
-
-    const user = rows.length > 0 ? rows[0] : null;
+    
+    const userService = new UserService();
+    const user = await userService.findById(payload.id);
 
     if (!user) {
       return res.status(401).json({ error: "User not found" });
