@@ -13,25 +13,28 @@ export class CustomerService {
   }) {
     const { name, email, password, address, phone } = data;
 
-    const connection = Database.getInstance();
+    const connection = await Database.getInstance().getConnection();
 
     try {
       await connection.beginTransaction();
 
-      const hashedPassword = bcrypt.hashSync(password, 10);
+      const user = await UserModel.create(
+        {
+          name,
+          email,
+          password,
+        },
+        { connection },
+      );
 
-      const user = await UserModel.create({
-        name,
-        email,
-        password: hashedPassword,
-      });
-
-
-      const customer = await CustomerModel.create({
-        user_id: user.id,
-        address,
-        phone,
-      });
+      const customer = await CustomerModel.create(
+        {
+          user_id: user.id,
+          address,
+          phone,
+        },
+        { connection },
+      );
 
       await connection.commit();
 

@@ -1,4 +1,4 @@
-import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import type { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { Database } from "../database.ts";
 import { UserModel } from "../model/user-model.ts";
 
@@ -39,11 +39,11 @@ export class CustomerModel {
   ): Promise<CustomerModel | null> {
     const db = Database.getInstance();
 
-    let query = "SELECT * FROM partners WHERE id = ?";
+    let query = "SELECT * FROM customers WHERE id = ?";
 
     if (options?.user) {
       query =
-        "SELECT p.*, u.id as user_id, u.name as user_name, u.email as user_email, u.password as user_password, u.created_at as user_created_at FROM partners p JOIN users u ON p.user_id = u.id WHERE p.id = ?";
+        "SELECT c.*, u.id as user_id, u.name as user_name, u.email as user_email, u.password as user_password, u.created_at as user_created_at FROM customers c JOIN users u ON c.user_id = u.id WHERE c.id = ?";
     }
 
     const [rows] = await db.execute<RowDataPacket[]>(query, [id]);

@@ -1,4 +1,4 @@
-import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import type { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { Database } from "../database.ts";
 
 export class EventModel {

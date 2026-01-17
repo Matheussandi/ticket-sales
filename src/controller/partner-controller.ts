@@ -35,7 +35,7 @@ partnerRouter.post("/events", async (req, res) => {
   const result = await eventService.create({
     name,
     description,
-    date,
+    date: new Date(date),
     location,
     partnerId: partner.id,
   });

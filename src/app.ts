@@ -23,7 +23,7 @@ const unprotectedPaths = [
 
 app.use(async (req, res, next) => {
   const isUnprotectedRoute = unprotectedPaths.some(
-    (route) => route.method === req.method && route.path.startsWith(req.path)
+    (route) => route.method === req.method && req.path.startsWith(route.path)
   );
 
   if (isUnprotectedRoute) {
