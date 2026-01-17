@@ -1,7 +1,7 @@
-import * as mysql from "mysql2/promise";
 import bcrypt from "bcrypt";
 import { Database } from "../database.ts";
 import { UserModel } from "../model/user-model.ts";
+import { CustomerModel } from "../model/customer-model.ts";
 
 export class CustomerService {
   async register(data: {
@@ -13,31 +13,42 @@ export class CustomerService {
   }) {
     const { name, email, password, address, phone } = data;
 
-    const connection = Database.getInstance();
+    const connection = await Database.getInstance().getConnection();
 
-    const createdAt = new Date();
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    try {
+      await connection.beginTransaction();
 
-    const userModel = await UserModel.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
+      const user = await UserModel.create(
+        {
+          name,
+          email,
+          password,
+        },
+        { connection },
+      );
 
-    const userId = userModel.id;
+      const customer = await CustomerModel.create(
+        {
+          user_id: user.id,
+          address,
+          phone,
+        },
+        { connection },
+      );
 
-    const [partnerResult] = await connection.execute<mysql.ResultSetHeader>(
-      "INSERT INTO customers (user_id, address, phone, created_at) VALUES (?, ?, ?, ?)",
-      [userId, address, phone, createdAt]
-    );
+      await connection.commit();
 
-    return {
-      id: partnerResult.insertId,
-      name,
-      user_id: userId,
-      address,
-      phone,
-      created_at: createdAt,
-    };
+      return {
+        id: customer.id,
+        name,
+        user_id: user.id,
+        address,
+        phone,
+        created_at: customer.created_at,
+      };
+    } catch (error) {
+      await connection.rollback();
+      throw new Error("Registration failed: " + (error as Error).message);
+    }
   }
 }

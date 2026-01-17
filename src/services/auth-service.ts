@@ -9,7 +9,7 @@ export class AuthService {
     if (userModel && bcrypt.compareSync(password, userModel.password || "")) {
       const token = jwt.sign(
         { id: userModel.id, email: userModel.email },
-        "your_jwt_secret",
+        "your_secret_key",
         { expiresIn: "1h" }
       );
 

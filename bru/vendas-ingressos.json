@@ -44,7 +44,7 @@
             "params": [],
             "body": {
               "mode": "json",
-              "json": "{\n  \"email\": \"customer@email.com\",\n  \"password\": \"123456\"\n}",
+              "json": "{\n  \"email\": \"partner@email.com\",\n  \"password\": \"123456\"\n}",
               "formUrlEncoded": [],
               "multipartForm": [],
               "file": []
@@ -152,7 +152,7 @@
           "tags": [],
           "examples": [],
           "request": {
-            "url": "{{baseURL}}/partners",
+            "url": "{{baseURL}}/events",
             "method": "POST",
             "headers": [
               {
@@ -175,7 +175,10 @@
             "tests": "",
             "docs": "",
             "auth": {
-              "mode": "none"
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
             }
           }
         },
@@ -226,10 +229,17 @@
           "tags": [],
           "examples": [],
           "request": {
-            "url": "{{baseURL}}/events/1",
+            "url": "{{baseURL}}/events/:eventId",
             "method": "GET",
             "headers": [],
-            "params": [],
+            "params": [
+              {
+                "name": "eventId",
+                "value": "",
+                "type": "path",
+                "enabled": true
+              }
+            ],
             "body": {
               "mode": "none",
               "formUrlEncoded": [],
@@ -366,7 +376,13 @@
           "request": {
             "url": "{{baseURL}}/partners",
             "method": "GET",
-            "headers": [],
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
             "params": [],
             "body": {
               "mode": "none",
@@ -380,7 +396,10 @@
             "tests": "",
             "docs": "",
             "auth": {
-              "mode": "inherit"
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
             }
           }
         },
@@ -398,7 +417,13 @@
           "request": {
             "url": "{{baseURL}}/partners/events",
             "method": "GET",
-            "headers": [],
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
             "params": [],
             "body": {
               "mode": "none",
@@ -431,10 +456,17 @@
           "tags": [],
           "examples": [],
           "request": {
-            "url": "{{baseURL}}/partners/events/1",
+            "url": "{{baseURL}}/partners/events/:eventId",
             "method": "GET",
             "headers": [],
-            "params": [],
+            "params": [
+              {
+                "name": "eventId",
+                "value": "",
+                "type": "path",
+                "enabled": true
+              }
+            ],
             "body": {
               "mode": "none",
               "formUrlEncoded": [],
@@ -463,10 +495,17 @@
           "tags": [],
           "examples": [],
           "request": {
-            "url": "{{baseURL}}/partners/1",
+            "url": "{{baseURL}}/partners/:partnerId",
             "method": "GET",
             "headers": [],
-            "params": [],
+            "params": [
+              {
+                "name": "partnerId",
+                "value": "",
+                "type": "path",
+                "enabled": true
+              }
+            ],
             "body": {
               "mode": "none",
               "formUrlEncoded": [],
@@ -484,9 +523,78 @@
           }
         }
       ]
+    },
+    {
+      "type": "folder",
+      "name": "Tickets",
+      "filename": "Tickets",
+      "seq": 5,
+      "examples": [],
+      "root": {
+        "request": {
+          "auth": {
+            "mode": "inherit"
+          }
+        },
+        "meta": {
+          "name": "Tickets",
+          "seq": 5
+        }
+      },
+      "items": [
+        {
+          "type": "http",
+          "name": "Create Ticket",
+          "filename": "Create Ticket.bru",
+          "seq": 1,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "examples": [],
+          "request": {
+            "url": "{{baseURL}}/events/:eventId/tickets",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
+            "params": [
+              {
+                "name": "eventId",
+                "value": "1",
+                "type": "path",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"num_tickets\": 10,\n  \"price\": 10\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        }
+      ]
     }
   ],
-  "activeEnvironmentUid": "PUxt6eyFIYVl9c6mFGMw6",
+  "activeEnvironmentUid": "GJI2dt2MHVcKkjMWBtcWz",
   "environments": [
     {
       "variables": [
@@ -516,9 +624,9 @@
       "node_modules",
       ".git"
     ],
-    "size": 0.002895355224609375,
-    "filesCount": 16
+    "size": 0.003147125244140625,
+    "filesCount": 17
   },
-  "exportedAt": "2026-01-10T17:19:38.821Z",
+  "exportedAt": "2026-01-17T23:43:40.416Z",
   "exportedUsing": "Bruno/3.0.2"
 }
