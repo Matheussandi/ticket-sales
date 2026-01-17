@@ -4,6 +4,13 @@ import { EventService } from "../services/event-service.ts";
 
 export const partnerRouter = Router();
 
+partnerRouter.get("/", async (req, res) => {
+  const partnerService = new PartnerService();
+  const partners = await partnerService.findAll();
+
+  res.json(partners);
+});
+
 partnerRouter.post("/register", async (req, res) => {
   const { name, email, password, company_name } = req.body;
 

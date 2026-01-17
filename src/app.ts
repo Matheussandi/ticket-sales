@@ -9,6 +9,7 @@ import { authRouter } from "./controller/auth-controller.ts";
 import { UserService } from "./services/user-service.ts";
 
 import { Database } from "./database.ts";
+import { ticketRoutes } from "./controller/ticket-contoller.ts";
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.use("/auth", authRouter);
 app.use("/customers", customerRouter);
 app.use("/partners", partnerRouter);
 app.use("/events", eventsRouter);
+app.use("/events", ticketRoutes);
 
 const PORT = process.env.PORT || 3000;
 
@@ -73,6 +75,7 @@ app.listen(PORT, async () => {
   const connection = Database.getInstance();
 
   await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
+  await connection.execute("TRUNCATE TABLE tickets");
   await connection.execute("TRUNCATE TABLE users");
   await connection.execute("TRUNCATE TABLE partners");
   await connection.execute("TRUNCATE TABLE customers");

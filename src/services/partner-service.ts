@@ -48,6 +48,10 @@ export class PartnerService {
     }
   }
 
+  async findAll() {
+    return PartnerModel.findAll();
+  }
+
   async findByUserId(userId: number) {
     return PartnerModel.findByUserId(userId);
   }
