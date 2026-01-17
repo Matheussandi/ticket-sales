@@ -1,5 +1,4 @@
-import * as mysql from "mysql2/promise";
-import { Database } from "../database.ts";
+import { EventModel } from "../model/event-model.ts";
 
 export class EventService {
   async create(data: {
@@ -11,52 +10,32 @@ export class EventService {
   }) {
     const { name, description, date, location, partnerId } = data;
 
-    const connection = Database.getInstance();
-
-    const eventDate = new Date(date);
-    const createdAt = new Date();
-
-    const [eventResult] = await connection.execute<mysql.ResultSetHeader>(
-      "INSERT INTO events (partner_id, name, description, date, location, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-      [partnerId, name, description, eventDate, location, createdAt]
-    );
-
-    return {
-      id: eventResult.insertId,
-      partner_id: partnerId,
+    const event = await EventModel.create({
       name,
       description,
-      date: eventDate,
+      date,
       location,
-      created_at: createdAt,
+      partner_id: partnerId,
+    });
+
+    return {
+      id: event.id,
+      name,
+      description,
+      date,
+      location,
+      created_at: event.created_at,
+      partner_id: event.partner_id,
     };
   }
 
   async findAll(partnerId?: number) {
-    const connection = Database.getInstance();
-
-    const query = partnerId
-      ? "SELECT * FROM events WHERE partner_id = ?"
-      : "SELECT * FROM events";
-
-    const params = partnerId ? [partnerId] : [];
-
-    const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
-      query,
-      params
-    );
-
-    return eventRows;
+    return await EventModel.findAll({
+      where: partnerId ? { partner_id: partnerId } : undefined,
+    });
   }
 
-  async findById(id: number) {
-    const connection = Database.getInstance();
-
-    const [eventRows] = await connection.execute<mysql.RowDataPacket[]>(
-      "SELECT * FROM events WHERE id = ?",
-      [id]
-    );
-
-    return eventRows.length > 0 ? eventRows[0] : null;
+  async findById(eventId: number) {
+    return await EventModel.findById(eventId);
   }
 }

@@ -1,15 +1,11 @@
-import * as mysql from "mysql2/promise";
-import { Database } from "../database.ts";
+import { UserModel } from "../model/user-model.ts";
 
 export class UserService {
   async findById(userId: number) {
-    const connection = Database.getInstance();
+    return UserModel.findById(userId);
+  }
 
-    const [rows] = await connection.execute<mysql.RowDataPacket[]>(
-      "SELECT * FROM users WHERE id = ?",
-      [userId]
-    );
-
-    return rows.length ? rows[0] : null;
+  async findByEmail(email: string) {
+    return UserModel.findByEmail(email);
   }
 }
