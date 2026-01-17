@@ -1,4 +1,4 @@
-import { RowDataPacket } from "mysql2";
+import type { RowDataPacket } from "mysql2/promise";
 import { Database } from "../database.ts";
 import { EventModel } from "../model/event-model.ts";
 import { TicketModel, TicketStatus } from "../model/ticket-model.ts";
