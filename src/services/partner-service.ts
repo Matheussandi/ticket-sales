@@ -45,6 +45,8 @@ export class PartnerService {
     } catch (error) {
       await connection.rollback();
       throw error;
+    } finally {
+      connection.release();
     }
   }
 

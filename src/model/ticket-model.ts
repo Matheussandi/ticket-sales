@@ -106,7 +106,7 @@ export class TicketModel {
 
   static async findAll(
     filter?: {
-      where?: { event_id?: number; ids: number[] };
+      where?: { event_id?: number; ids?: number[] };
     },
     options?: { connection?: PoolConnection },
   ): Promise<TicketModel[]> {

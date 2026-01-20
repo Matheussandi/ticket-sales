@@ -40,7 +40,7 @@ ticketRoutes.get("/:eventId/tickets/:ticketId", async (req, res) => {
   const { eventId, ticketId } = req.params;
   const ticketService = new TicketService();
 
-  const ticket = await ticketService.findById(Number(ticketId));
+  const ticket = await ticketService.findById(Number(eventId), Number(ticketId));
 
   if (!ticket || ticket.event_id !== Number(eventId)) {
     return res.status(404).json({ error: "Ticket not found for this event." });

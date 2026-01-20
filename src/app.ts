@@ -1,15 +1,16 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 
+import { purchaseRouter } from "./controller/purchase-controller.ts";
 import { customerRouter } from "./controller/customer-controller.ts";
 import { partnerRouter } from "./controller/partner-controller.ts";
 import { eventsRouter } from "./controller/events-controller.ts";
+import { ticketRoutes } from "./controller/ticket-contoller.ts";
 import { authRouter } from "./controller/auth-controller.ts";
 
 import { UserService } from "./services/user-service.ts";
 
 import { Database } from "./database.ts";
-import { ticketRoutes } from "./controller/ticket-contoller.ts";
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.use("/customers", customerRouter);
 app.use("/partners", partnerRouter);
 app.use("/events", eventsRouter);
 app.use("/events", ticketRoutes);
+app.use("/purchases", purchaseRouter);
 
 const PORT = process.env.PORT || 3000;
 
@@ -75,6 +77,9 @@ app.listen(PORT, async () => {
   const connection = Database.getInstance();
 
   await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
+  await connection.execute("TRUNCATE TABLE reservation_tickets");
+  await connection.execute("TRUNCATE TABLE purchases_tickets");
+  await connection.execute("TRUNCATE TABLE purchases");
   await connection.execute("TRUNCATE TABLE tickets");
   await connection.execute("TRUNCATE TABLE users");
   await connection.execute("TRUNCATE TABLE partners");
