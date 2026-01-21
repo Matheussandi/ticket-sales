@@ -3,14 +3,17 @@ import type {
   ResultSetHeader,
   RowDataPacket,
 } from "mysql2/promise";
+
 import { Database } from "../database.ts";
 
-export enum PurchaseStatus {
-  PENDING = "pending",
-  PAID = "paid",
-  ERROR = "error",
-  CANCELED = "canceled",
-}
+export const PurchaseStatus = {
+  PENDING: "pending",
+  PAID: "paid",
+  ERROR: "error",
+  CANCELED: "canceled",
+} as const;
+
+export type PurchaseStatus = typeof PurchaseStatus[keyof typeof PurchaseStatus];
 
 export class PurchaseModel {
   id: number;

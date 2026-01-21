@@ -1,9 +1,10 @@
-import { Request, Response, Router } from "express";
+import express from "express";
+import type { Request, Response } from "express";
 import { CustomerService } from "../services/customer-service.ts";
 import { PaymentService } from "../services/payment-service.ts";
 import { PurchaseService } from "../services/purchase-service.ts";
 
-export const purchaseRouter = Router();
+export const purchaseRouter = express.Router();
 
 purchaseRouter.post("/", async (req: Request, res: Response) => {
     const customerService = new CustomerService();

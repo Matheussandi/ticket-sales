@@ -78,7 +78,7 @@ app.listen(PORT, async () => {
 
   await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
   await connection.execute("TRUNCATE TABLE reservation_tickets");
-  await connection.execute("TRUNCATE TABLE purchases_tickets");
+   await connection.execute("TRUNCATE TABLE purchase_tickets");
   await connection.execute("TRUNCATE TABLE purchases");
   await connection.execute("TRUNCATE TABLE tickets");
   await connection.execute("TRUNCATE TABLE users");

@@ -1,11 +1,19 @@
 import { Database } from "../database.ts";
 import { CustomerModel } from "../model/customer-model.ts";
 import { PurchaseModel, PurchaseStatus } from "../model/purchase-model.ts";
+import {
+  ReservationStatus,
+  ReservationTicketModel,
+} from "../model/reservation-ticket-model.ts";
 import { TicketModel, TicketStatus } from "../model/ticket-model.ts";
 import { PaymentService } from "./payment-service.ts";
 
 export class PurchaseService {
-  constructor(private paymentService: PaymentService) {}
+  private paymentService: PaymentService;
+
+  constructor(paymentService: PaymentService) {
+    this.paymentService = paymentService;
+  }
 
   async create(data: {
     customerId: number;
@@ -51,7 +59,7 @@ export class PurchaseService {
       );
 
       await this.associateTicketsWithPurchase(
-        purchase.id, 
+        purchase.id,
         data.ticketIds,
         connection,
       );
@@ -65,15 +73,40 @@ export class PurchaseService {
     }
 
     try {
-        await connection.beginTransaction();
-        purchase.status = PurchaseStatus.PAID;
-        await purchase.update({ connection });
+      await connection.beginTransaction();
+      purchase.status = PurchaseStatus.PAID;
+      await purchase.update({ connection });
+
+      await ReservationTicketModel.create(
+        {
+          customer_id: data.customerId,
+          ticket_id: data.ticketIds[0],
+          status: ReservationStatus.RESERVED,
+        },
+        { connection },
+      );
+
+      await this.paymentService.processPayment(
+        {
+          name: customer.user.name,
+          email: customer.user.email,
+          address: customer.address,
+          phone: customer.phone,
+        },
+        purchase.total_amount,
+        data.cardToken,
+      );
+
+      await connection.commit();
+
+      return purchase.id;
     } catch (error) {
-        purchase.status = PurchaseStatus.CANCELED;
-        await purchase.update({ connection });
-        throw error;
+      await connection.rollback();
+      purchase.status = PurchaseStatus.CANCELED;
+      await purchase.update({ connection });
+      throw error;
     } finally {
-        connection.release();
+      connection.release();
     }
 
     return purchase.id;
