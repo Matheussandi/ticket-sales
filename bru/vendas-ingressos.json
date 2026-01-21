@@ -235,7 +235,7 @@
             "params": [
               {
                 "name": "eventId",
-                "value": "",
+                "value": "1",
                 "type": "path",
                 "enabled": true
               }
@@ -497,11 +497,17 @@
           "request": {
             "url": "{{baseURL}}/partners/:partnerId",
             "method": "GET",
-            "headers": [],
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
             "params": [
               {
                 "name": "partnerId",
-                "value": "",
+                "value": "1",
                 "type": "path",
                 "enabled": true
               }
@@ -518,7 +524,72 @@
             "tests": "",
             "docs": "",
             "auth": {
-              "mode": "inherit"
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Purchase",
+      "filename": "Purchase",
+      "seq": 6,
+      "examples": [],
+      "root": {
+        "request": {
+          "auth": {
+            "mode": "inherit"
+          }
+        },
+        "meta": {
+          "name": "Purchase",
+          "seq": 6
+        }
+      },
+      "items": [
+        {
+          "type": "http",
+          "name": "New Purchase",
+          "filename": "New Purchase.bru",
+          "seq": 1,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "examples": [],
+          "request": {
+            "url": "{{baseURL}}/purchases",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"ticket_ids\": [1],\n  \"card_token\": \"tok_visa\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
             }
           }
         }
@@ -590,11 +661,59 @@
               }
             }
           }
+        },
+        {
+          "type": "http",
+          "name": "List Tickets",
+          "filename": "List Tickets.bru",
+          "seq": 2,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "examples": [],
+          "request": {
+            "url": "{{baseURL}}/:eventId/tickets",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
+            "params": [
+              {
+                "name": "eventId",
+                "value": "1",
+                "type": "path",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
         }
       ]
     }
   ],
-  "activeEnvironmentUid": "GJI2dt2MHVcKkjMWBtcWz",
+  "activeEnvironmentUid": "ZU8G6ouyu7hJHVkcRjgob",
   "environments": [
     {
       "variables": [
@@ -624,9 +743,9 @@
       "node_modules",
       ".git"
     ],
-    "size": 0.003147125244140625,
-    "filesCount": 17
+    "size": 0.004200935363769531,
+    "filesCount": 21
   },
-  "exportedAt": "2026-01-17T23:43:40.416Z",
+  "exportedAt": "2026-01-21T23:29:29.730Z",
   "exportedUsing": "Bruno/3.0.2"
 }

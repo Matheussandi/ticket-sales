@@ -49,6 +49,13 @@ export class CustomerService {
     } catch (error) {
       await connection.rollback();
       throw new Error("Registration failed: " + (error as Error).message);
+    } finally {
+      connection.release();
     }
+  }
+
+  async findByUserId(userId: number) {
+    const customer = await CustomerModel.findByUserId(userId);
+    return customer;
   }
 }

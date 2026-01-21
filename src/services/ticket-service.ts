@@ -40,26 +40,18 @@ export class TicketService {
   }
 
   async findByEventId(eventId: number): Promise<TicketModel[]> {
-    const db = Database.getInstance();
-    const [rows] = await db.execute<RowDataPacket[]>(
-      "SELECT * FROM tickets WHERE event_id = ?",
-      [eventId],
-    );
+    const event = await EventModel.findById(eventId);
 
-    return rows.map((row) => new TicketModel(row as TicketModel));
-  }
-
-  async findById(ticketId: number): Promise<TicketModel | null> {
-    const db = Database.getInstance();
-    const [rows] = await db.execute<RowDataPacket[]>(
-      "SELECT * FROM tickets WHERE id = ?",
-      [ticketId],
-    );
-
-    if (rows.length === 0) {
-      return null;
+    if (!event) {
+      throw new Error("Event not found");
     }
 
-    return new TicketModel(rows[0] as TicketModel);
+    return TicketModel.findAll({ where: { event_id: eventId } });
+  }
+
+  async findById(eventId: number, ticketId: number): Promise<TicketModel | null> {
+    const ticket = await TicketModel.findById(ticketId);
+    
+    return ticket && ticket.event_id === eventId ? ticket : null;
   }
 }
