@@ -1,7 +1,40 @@
+# Dependencies
 node_modules
 npm-debug.log
+package-lock.json*
+
+# Environment files
 .env
-dist
+.env.local
+.env.*.local
+
+# Git
 .git
 .gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
 README.md
+docs/
+bru/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist
+build
+*.log
+

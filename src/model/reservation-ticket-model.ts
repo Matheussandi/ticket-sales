@@ -17,6 +17,7 @@ export class ReservationTicketModel {
   id: number;
   customer_id: number;
   ticket_id: number;
+  reserved_ticket_id?: number;
   reservation_date: Date;
   status: ReservationStatus;
 
@@ -54,6 +55,7 @@ export class ReservationTicketModel {
     if (data.id !== undefined) this.id = data.id;
     if (data.customer_id !== undefined) this.customer_id = data.customer_id;
     if (data.ticket_id !== undefined) this.ticket_id = data.ticket_id;
+    if (data.reserved_ticket_id !== undefined) this.reserved_ticket_id = data.reserved_ticket_id;
     if (data.reservation_date !== undefined)
       this.reservation_date = data.reservation_date;
     if (data.status !== undefined) this.status = data.status;

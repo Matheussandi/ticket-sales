@@ -1,6 +1,7 @@
 import { Database } from "../database.ts";
 import { CustomerModel } from "../model/customer-model.ts";
 import { PurchaseModel, PurchaseStatus } from "../model/purchase-model.ts";
+import { PurchaseTicketModel } from "../model/purchase-ticket-model.ts";
 import {
   ReservationStatus,
   ReservationTicketModel,
@@ -102,14 +103,12 @@ export class PurchaseService {
       return purchase.id;
     } catch (error) {
       await connection.rollback();
-      purchase.status = PurchaseStatus.CANCELED;
+      purchase.status = PurchaseStatus.ERROR;
       await purchase.update({ connection });
       throw error;
     } finally {
       connection.release();
     }
-
-    return purchase.id;
   }
 
   private async associateTicketsWithPurchase(
@@ -117,11 +116,16 @@ export class PurchaseService {
     ticketIds: number[],
     connection: any,
   ): Promise<void> {
+    if (ticketIds.length === 0) {
+      return;
+    }
+
     const purchaseTickets = ticketIds.map((ticketId) => ({
       purchase_id: purchaseId,
       ticket_id: ticketId,
     }));
-    await PurchaseModel.createMany(purchaseTickets, { connection });
+
+    await PurchaseTicketModel.createMany(purchaseTickets, { connection });
   }
 
   async findById(id: number): Promise<PurchaseModel | null> {

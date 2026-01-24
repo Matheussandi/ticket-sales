@@ -6,19 +6,9 @@
 
 ## 📋 Sobre o Projeto
 
-Sistema de vendas de ingressos para eventos, desenvolvido com Node.js, TypeScript, Express e MySQL.
+Sistema de vendas de ingressos para eventos, desenvolvido com Node.js, TypeScript, Express e MySQL. O sistema permite que parceiros criem e gerenciem eventos com tickets, enquanto clientes podem visualizar eventos e realizar compras.
 
-## 🚀 Tecnologias
-
-- **Node.js** v22.15.1+
-- **TypeScript** 5.9+
-- **Express** 5.2+
-- **MySQL** 3.16+
-- **Docker** & Docker Compose
-- **bcrypt** - Criptografia de senhas
-- **JWT** - Autenticação
-
-## 📦 Instalação
+## 🚀 Início Rápido
 
 ```bash
 # Instalar dependências
@@ -26,7 +16,6 @@ npm install
 
 # Configurar variáveis de ambiente
 cp .env.example .env
-# Edite o arquivo .env com suas configurações
 
 # Iniciar banco de dados com Docker
 docker-compose up -d
@@ -35,46 +24,23 @@ docker-compose up -d
 npm run dev
 ```
 
-## 🐛 Debug no VS Code
-
-O projeto está configurado para debug com VS Code usando o tipo de execução nativo do Node.js 22+.
-
-### Como usar o debugger:
-
-1. **Colocar breakpoints**: Clique na margem esquerda do editor (ao lado dos números de linha) para adicionar um ponto vermelho de parada
-
-2. **Iniciar debug**: 
-   - Pressione `F5` ou
-   - Vá em "Executar > Iniciar Depuração" ou
-   - Use o ícone de play na aba "Executar e Depurar"
-
-3. **Controles de debug**:
-   - **Continuar** (F5): Executa até o próximo breakpoint
-   - **Step Over** (F10): Executa a linha atual
-   - **Step Into** (F11): Entra dentro de funções
-   - **Step Out** (Shift+F11): Sai da função atual
-   - **Restart** (Ctrl+Shift+F5): Reinicia o debug
-   - **Stop** (Shift+F5): Para o debug
-
-4. **Testar endpoints**: Com o debug rodando, use o Bruno (pasta `bruno/`) ou qualquer cliente HTTP para fazer requisições à API
-
-### Configuração do Debug
-
-A configuração está em `.vscode/launch.json` e utiliza:
-- `--experimental-strip-types`: Processa TypeScript nativamente no Node 22+
-- `--env-file .env`: Carrega variáveis de ambiente
-- `--no-warnings`: Remove warnings experimentais
-
 ## 📁 Estrutura do Projeto
 
 ```
 vendas-ingresso/
 ├── src/
-│   ├── app.ts              # Aplicação principal
+│   ├── app.ts              # Aplicação principal e configuração de rotas
+│   ├── database.ts         # Configuração do pool de conexões MySQL
+│   ├── controller/         # Controladores das rotas HTTP
+│   ├── model/              # Modelos de dados (Active Record)
+│   ├── services/           # Serviços com regras de negócio
 │   └── types/              # Definições de tipos TypeScript
-├── bruno/                  # Coleção de requisições HTTP
-├── .vscode/
-│   └── launch.json         # Configuração de debug
+├── docs/                   # Documentação detalhada
+│   ├── system-requirements.md  # Requisitos do sistema
+│   ├── technologies.md     # Tecnologias utilizadas
+│   ├── architecture.md     # Arquitetura do projeto
+│   └── patterns.md         # Padrões de projeto
+├── bru/                    # Coleção de requisições HTTP (Bruno)
 ├── docker-compose.yml      # Configuração do MySQL
 ├── init.sql                # Script de inicialização do banco
 └── package.json            # Dependências e scripts
@@ -82,41 +48,74 @@ vendas-ingresso/
 
 ## 🔑 Endpoints da API
 
-### Autenticação
-- `POST /auth/login` - Login de usuário
+### Autenticação (`/auth`)
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| POST | `/auth/login` | Login de usuário | Não |
 
-### Parceiros (Partners)
-- `POST /partners/register` - Registro de parceiro
-- `POST /partners/events` - Criar evento (requer autenticação)
-- `GET /partners/events` - Listar eventos do parceiro
-- `GET /partners/events/:eventId` - Detalhes de um evento
+### Parceiros (`/partners`)
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| GET | `/partners` | Listar todos os parceiros | Sim |
+| POST | `/partners/register` | Registro de novo parceiro | Não |
+| POST | `/partners/events` | Criar evento | Sim |
+| GET | `/partners/events` | Listar eventos do parceiro autenticado | Sim |
+| GET | `/partners/events/:eventId` | Detalhes de um evento específico | Sim |
 
-### Clientes (Customers)
-- `POST /customers/register` - Registro de cliente
+### Clientes (`/customers`)
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| POST | `/customers/register` | Registro de novo cliente | Não |
 
-### Eventos (Events)
-- `GET /events` - Listar todos os eventos (público)
-- `GET /events/:eventId` - Detalhes de um evento (público)
-- `POST /events` - Criar evento (requer autenticação)
+### Eventos (`/events`)
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| GET | `/events` | Listar todos os eventos | Não |
+| GET | `/events/:eventId` | Detalhes de um evento | Não |
+| POST | `/events` | Criar evento | Sim |
+
+### Tickets (`/events/:eventId/tickets`)
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| POST | `/events/:eventId/tickets` | Criar tickets em lote para um evento | Sim (Parceiro) |
+| GET | `/events/:eventId/tickets` | Listar tickets de um evento | Não |
+| GET | `/events/:eventId/tickets/:ticketId` | Detalhes de um ticket específico | Não |
+
+### Compras (`/purchases`)
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| POST | `/purchases` | Realizar compra de tickets | Sim (Cliente) |
 
 ## 🛠️ Scripts Disponíveis
 
 ```bash
-# Desenvolvimento com hot-reload
-npm run dev
-
-# Build do projeto
-npm run build
-
-# Executar versão compilada
-npm start
+npm run dev    # Desenvolvimento com hot-reload
+npm run build  # Build do projeto
+npm start      # Executar versão compilada
 ```
 
 ## 📝 Convenções
 
-- Autenticação via JWT no header `Authorization: Bearer <token>`
-- Senhas são criptografadas com bcrypt (10 rounds)
-- Timestamps são armazenados como objetos Date
+- **Autenticação**: JWT no header `Authorization: Bearer <token>`
+- **Senhas**: Criptografadas com bcrypt (10 rounds)
+- **Timestamps**: Armazenados como objetos Date
+
+## 📚 Documentação Detalhada
+
+Para mais informações, consulte a pasta `docs/`:
+
+- [Requisitos do Sistema](docs/system-requirements.md)
+- [Tecnologias Utilizadas](docs/technologies.md)
+- [Arquitetura do Projeto](docs/architecture.md)
+- [Padrões de Projeto](docs/patterns.md)
+
+## 🐛 Debug no VS Code
+
+O projeto está configurado para debug com VS Code usando o Node.js 22+.
+
+1. Adicione breakpoints clicando na margem esquerda do editor
+2. Pressione `F5` para iniciar o debug
+3. Use Bruno ou qualquer cliente HTTP para testar os endpoints
 
 ## 🤝 Contribuindo
 

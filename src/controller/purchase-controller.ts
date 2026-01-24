@@ -8,20 +8,20 @@ export const purchaseRouter = express.Router();
 
 purchaseRouter.post("/", async (req: Request, res: Response) => {
     const customerService = new CustomerService();
-    const customer = await customerService.findByUserId(req.body.userId);
+    const customer = await customerService.findByUserId(req.user.id);
 
     if (!customer) {
         return res.status(400).json({ error: "User needs to be a customer to make a purchase" });
     }
 
-    const { ticketIds, cardToken } = req.body;
+    const { ticket_ids, card_token } = req.body;
 
     const paymentService = new PaymentService();
     const purchaseService = new PurchaseService(paymentService);
     const newPurchaseId = await purchaseService.create({
         customerId: customer.id,
-        ticketIds,
-        cardToken,
+        ticketIds: ticket_ids,
+        cardToken: card_token,
     });
 
     const purchase = await purchaseService.findById(newPurchaseId);
