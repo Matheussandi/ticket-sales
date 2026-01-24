@@ -1,4 +1,18 @@
 services:
+  node:
+    build: .
+    ports:
+      - "8080:3000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_DATABASE: tickets
+      DB_PORT: 3306
+    depends_on:
+      mysql:
+        condition: service_healthy
+
   mysql:
     image: mysql:8.0-oracle
     container_name: tickets-mysql
