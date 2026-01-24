@@ -115,25 +115,19 @@ export class TicketModel {
     const params = [];
 
     if (filter && filter.where) {
-      // Aqui where é um array vazio inicialmente
       const where = [];
       if (filter.where.event_id) {
-        // Adiciona a condição para event_id
         where.push("event_id = ?");
-        // Adiciona o valor do event_id aos parâmetros
         params.push(filter.where.event_id);
-        // Ficando assim: where = ["event_id = ?"] e params = [filter.where.event_id]
       }
       if (filter.where.ids) {
         where.push(`id IN (${filter.where.ids.map(() => "?").join(", ")})`);
         params.push(...filter.where.ids);
       }
-      query += " WHERE " + where.join(" AND ");
+      if (where.length > 0) {
+        query += " WHERE " + where.join(" AND ");
+      }
     }
-
-    // Reultado final da query com e sem filtros
-    // Sem filtros: "SELECT * FROM tickets"
-    // Com filtros: "SELECT * FROM tickets WHERE event_id = ? AND id IN (?, ?, ...)"
 
     const [rows] = await db.execute<RowDataPacket[]>(query, params);
     return rows.map((row) => new TicketModel(row as TicketModel));

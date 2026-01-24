@@ -108,10 +108,12 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `reservation_tickets` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `reservation_date` TIMESTAMP NOT NULL,
-    `status` ENUM('reserved', 'canceled', 'expired') NOT NULL DEFAULT 'reserved',
-    `customer_id` INT NOT NULL,
+    `status` ENUM('reserved', 'canceled') NOT NULL,
+    `reserved_ticket_id` INT GENERATED ALWAYS AS (CASE WHEN status = 'reserved' THEN ticket_id ELSE NULL END),
     `ticket_id` INT NOT NULL,
+    `customer_id` INT NOT NULL,
     PRIMARY KEY (`id`),
+    UNIQUE INDEX `reserved_ticket_id_UNIQUE` (`reserved_ticket_id` ASC) VISIBLE,
     INDEX `fk_reservation_tickets_tickets1_idx` (`ticket_id` ASC) VISIBLE,
     INDEX `fk_reservation_tickets_customers1_idx` (`customer_id` ASC) VISIBLE,
     CONSTRAINT `fk_reservation_tickets_tickets1`
@@ -119,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `reservation_tickets` (
         REFERENCES `tickets` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
-    CONSTRAINT `fk_reservation_tickets_custom`
+    CONSTRAINT `fk_reservation_tickets_customers1`
         FOREIGN KEY (`customer_id`)
         REFERENCES `customers` (`id`)
         ON DELETE NO ACTION
