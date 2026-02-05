@@ -65,65 +65,6 @@
     },
     {
       "type": "folder",
-      "name": "Customers",
-      "filename": "Customers",
-      "seq": 3,
-      "examples": [],
-      "root": {
-        "request": {
-          "auth": {
-            "mode": "inherit"
-          }
-        },
-        "meta": {
-          "name": "Customers",
-          "seq": 3
-        }
-      },
-      "items": [
-        {
-          "type": "http",
-          "name": "Create Customers",
-          "filename": "Create Customers.bru",
-          "seq": 1,
-          "settings": {
-            "encodeUrl": true,
-            "timeout": 0
-          },
-          "tags": [],
-          "examples": [],
-          "request": {
-            "url": "{{baseURL}}/customers/register",
-            "method": "POST",
-            "headers": [
-              {
-                "name": "Content-Type",
-                "value": "application/json",
-                "enabled": true
-              }
-            ],
-            "params": [],
-            "body": {
-              "mode": "json",
-              "json": "{\n  \"name\": \"Customer\",\n  \"email\": \"customer@email.com\",\n  \"password\": \"123456\",\n  \"address\": \"Rua Customer\",\n  \"phone\": \"999225544\"\n}",
-              "formUrlEncoded": [],
-              "multipartForm": [],
-              "file": []
-            },
-            "script": {},
-            "vars": {},
-            "assertions": [],
-            "tests": "",
-            "docs": "",
-            "auth": {
-              "mode": "inherit"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "type": "folder",
       "name": "Events",
       "filename": "Events",
       "seq": 4,
@@ -242,6 +183,65 @@
             ],
             "body": {
               "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "inherit"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Customers",
+      "filename": "Customers",
+      "seq": 3,
+      "examples": [],
+      "root": {
+        "request": {
+          "auth": {
+            "mode": "inherit"
+          }
+        },
+        "meta": {
+          "name": "Customers",
+          "seq": 3
+        }
+      },
+      "items": [
+        {
+          "type": "http",
+          "name": "Create Customers",
+          "filename": "Create Customers.bru",
+          "seq": 1,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "examples": [],
+          "request": {
+            "url": "{{baseURL}}/customers/register",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"Customer\",\n  \"email\": \"customer@email.com\",\n  \"password\": \"123456\",\n  \"address\": \"Rua Customer\",\n  \"phone\": \"999225544\"\n}",
               "formUrlEncoded": [],
               "multipartForm": [],
               "file": []
@@ -674,7 +674,7 @@
           "tags": [],
           "examples": [],
           "request": {
-            "url": "{{baseURL}}/:eventId/tickets",
+            "url": "{{baseURL}}/events/:eventId/tickets",
             "method": "GET",
             "headers": [
               {
@@ -713,13 +713,13 @@
       ]
     }
   ],
-  "activeEnvironmentUid": "ZU8G6ouyu7hJHVkcRjgob",
+  "activeEnvironmentUid": "J43pPCjlnnDgln6xiEM6S",
   "environments": [
     {
       "variables": [
         {
           "name": "baseURL",
-          "value": "http://localhost:3000",
+          "value": "http://localhost:8080",
           "enabled": true,
           "secret": false,
           "type": "text"
@@ -732,7 +732,7 @@
           "type": "text"
         }
       ],
-      "name": "baseURL"
+      "name": "dev"
     }
   ],
   "brunoConfig": {
@@ -743,9 +743,9 @@
       "node_modules",
       ".git"
     ],
-    "size": 0.004200935363769531,
-    "filesCount": 21
+    "size": 0.00457000732421875,
+    "filesCount": 22
   },
-  "exportedAt": "2026-01-21T23:29:29.730Z",
+  "exportedAt": "2026-02-04T23:44:18.122Z",
   "exportedUsing": "Bruno/3.0.2"
 }
