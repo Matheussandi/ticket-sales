@@ -11,12 +11,18 @@ import cors from "cors";
  * - credentials: true (permite envio de cookies/headers de autenticação)
  * - methods: Métodos HTTP permitidos
  * - allowedHeaders: Headers que o front-end pode enviar
+ * - exposedHeaders: Headers que o front-end pode ler na resposta
+ * - preflightContinue: false (finaliza preflight no middleware)
+ * - optionsSuccessStatus: 204 (código de sucesso para OPTIONS)
  */
 export const corsMiddleware = () => {
   return cors({
     origin: process.env.CORS_ORIGIN || "http://localhost:3000",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    exposedHeaders: ["Content-Length", "Content-Type", "Authorization"],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 };

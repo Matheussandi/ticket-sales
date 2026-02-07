@@ -5,10 +5,13 @@ services:
       - "8080:3000"
     environment:
       DB_HOST: mysql
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_DATABASE: tickets
-      DB_PORT: 3306
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_DATABASE: ${DB_DATABASE:-tickets}
+      DB_PORT: ${DB_PORT:-3306}
+      PORT: ${PORT:-3000}
+      JWT_SECRET: ${JWT_SECRET:-your_secret_key}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
     depends_on:
       mysql:
         condition: service_healthy
