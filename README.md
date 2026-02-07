@@ -89,10 +89,38 @@ vendas-ingresso/
 ## 🛠️ Scripts Disponíveis
 
 ```bash
-npm run dev    # Desenvolvimento com hot-reload
-npm run build  # Build do projeto
-npm start      # Executar versão compilada
+npm run dev          # Desenvolvimento com hot-reload
+npm run build        # Build do projeto
+npm start            # Executar versão compilada
+npm test             # Executar testes unitários
+npm run test:watch   # Executar testes em modo watch
+npm run test:coverage # Executar testes com cobertura de código
 ```
+
+## 🧪 Testes
+
+O projeto utiliza **Node.js Test Runner nativo** (built-in no Node.js 22+) para testes unitários.
+
+### Executar Testes
+
+```bash
+# Executar todos os testes
+npm test
+
+# Watch mode (re-executa ao salvar)
+npm run test:watch
+
+# Com relatório de cobertura
+npm run test:coverage
+```
+
+### Cobertura Atual
+
+- ✅ **AuthService** - Login e autenticação
+- ✅ **authMiddleware** - Autenticação e autorização de rotas
+- 🔜 Services adicionais (Customer, Partner, Event, Ticket, Purchase)
+
+Para mais detalhes sobre como escrever e executar testes, consulte [Guia de Testes](docs/testing.md).
 
 ## 📝 Convenções
 
@@ -108,6 +136,7 @@ Para mais informações, consulte a pasta `docs/`:
 - [Tecnologias Utilizadas](docs/technologies.md)
 - [Arquitetura do Projeto](docs/architecture.md)
 - [Padrões de Projeto](docs/patterns.md)
+- [Guia de Testes](docs/testing.md)
 
 ## 🐛 Debug no VS Code
 

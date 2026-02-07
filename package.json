@@ -4,7 +4,9 @@
   "type": "module",
   "main": "src/app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --env-file .env --experimental-strip-types --test src/**/*.test.ts",
+    "test:watch": "node --env-file .env --experimental-strip-types --test --watch src/**/*.test.ts",
+    "test:coverage": "node --env-file .env --experimental-strip-types --test --experimental-test-coverage src/**/*.test.ts",
     "start": "node --env-file .env --experimental-strip-types src/app.ts",
     "dev": "node --env-file .env --experimental-strip-types --no-warnings --watch src/app.ts"
   },
