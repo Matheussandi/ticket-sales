@@ -1,5 +1,4 @@
 import express from "express";
-import jwt from "jsonwebtoken";
 
 import { purchaseRouter } from "./controller/purchase-controller.ts";
 import { customerRouter } from "./controller/customer-controller.ts";
@@ -8,55 +7,16 @@ import { eventsRouter } from "./controller/events-controller.ts";
 import { ticketRoutes } from "./controller/ticket-contoller.ts";
 import { authRouter } from "./controller/auth-controller.ts";
 
-import { UserService } from "./services/user-service.ts";
+import { corsMiddleware } from "./middlewares/cors-middleware.ts";
+import { authMiddleware } from "./middlewares/auth-middleware.ts";
 
 import { Database } from "./database.ts";
 
 const app = express();
 
 app.use(express.json());
-
-const unprotectedPaths = [
-  { method: "POST", path: "/auth/login" },
-  { method: "POST", path: "/customers/register" },
-  { method: "POST", path: "/partners/register" },
-  { method: "GET", path: "/events" },
-];
-
-app.use(async (req, res, next) => {
-  const isUnprotectedRoute = unprotectedPaths.some(
-    (route) => route.method === req.method && req.path.startsWith(route.path)
-  );
-
-  if (isUnprotectedRoute) {
-    return next();
-  }
-
-  const token = req.headers["authorization"]?.split(" ")[1];
-
-  if (!token) {
-    return res.json({ error: "No token provided" });
-  }
-
-  try {
-    const payload = jwt.verify(token, "your_secret_key") as {
-      id: number;
-      email: string;
-    };
-    
-    const userService = new UserService();
-    const user = await userService.findById(payload.id);
-
-    if (!user) {
-      return res.status(401).json({ error: "User not found" });
-    }
-
-    req.user = user as { id: number; email: string };
-    next();
-  } catch (err) {
-    return res.status(401).json({ error: "Invalid token" });
-  }
-});
+app.use(corsMiddleware());
+app.use(authMiddleware);
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
@@ -88,9 +48,3 @@ app.listen(PORT, async () => {
   await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
   console.log(`Server is running on port ${PORT}`);
 });
-
-// MVC - Model-View-Controller (Architecture)
-
-// Application Service - o que quero expor como regras de negócio da aplicação
-// Domain Service - regras de negócio específicas de um domínio
-// Active Record - padrão onde o modelo de dados é responsável por persistir a si mesmo
