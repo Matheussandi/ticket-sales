@@ -59,6 +59,7 @@ export const authMiddleware = async (
     const payload = jwt.verify(token, jwtSecret) as {
       id: number;
       email: string;
+      role: 'customer' | 'partner';
     };
 
     // Busca o usuário no banco de dados
@@ -70,7 +71,7 @@ export const authMiddleware = async (
     }
 
     // Anexa o usuário ao request para uso nos controllers
-    req.user = user as { id: number; email: string };
+    req.user = { id: user.id, email: user.email, role: payload.role };
     next();
   } catch (err) {
     return res.status(401).json({ error: "Invalid token" });

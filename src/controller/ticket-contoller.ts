@@ -6,11 +6,16 @@ export const ticketRoutes = Router();
 
 ticketRoutes.post("/:eventId/tickets", async (req, res) => {
   const userId = req.user?.id;
+
+  if (req.user!.role !== 'partner') {
+    return res.status(403).json({ error: "Only partners can create tickets" });
+  }
+
   const partnerService = new PartnerService();
   const partner = await partnerService.findByUserId(userId!);
 
   if (!partner) {
-    return res.status(403).json({ error: "Only partners can create tickets." });
+    return res.status(403).json({ error: "Partner profile not found" });
   }
 
   const { num_tickets, price } = req.body;

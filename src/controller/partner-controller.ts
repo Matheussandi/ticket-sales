@@ -31,11 +31,15 @@ partnerRouter.post("/events", async (req, res) => {
 
   const userId = req.user!.id;
 
+  if (req.user!.role !== 'partner') {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
   const partnerService = new PartnerService();
   const partner = await partnerService.findByUserId(userId);
 
   if (!partner) {
-    return res.status(403).json({ message: "Not authorized" });
+    return res.status(403).json({ message: "Partner profile not found" });
   }
 
   const eventService = new EventService();
@@ -67,11 +71,15 @@ partnerRouter.get("/events/:eventId", async (req, res) => {
 
   const userId = req.user!.id;
 
+  if (req.user!.role !== 'partner') {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
   const partnerService = new PartnerService();
   const partner = await partnerService.findByUserId(userId);
 
   if (!partner) {
-    return res.status(403).json({ message: "Not authorized" });
+    return res.status(403).json({ message: "Partner profile not found" });
   }
 
   const eventService = new EventService();

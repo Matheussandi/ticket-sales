@@ -23,6 +23,7 @@ export class CustomerService {
           name,
           email,
           password,
+          role: 'customer',
         },
         { connection },
       );
