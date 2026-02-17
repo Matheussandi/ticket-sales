@@ -17,3 +17,9 @@ authRouter.post("/login", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+authRouter.post("/logout", async (req, res) => {
+  // Com JWT stateless, o logout é feito no cliente removendo o token
+  // Esta rota serve para confirmação e pode ser estendida para blacklist de tokens
+  res.status(200).json({ message: "Logout successful" });
+});

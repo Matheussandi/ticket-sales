@@ -6,6 +6,7 @@ export class UserModel {
   id: number;
   name: string;
   email: string;
+  role?: 'customer' | 'partner';
   password?: string;
   created_at?: Date;
 
@@ -18,19 +19,20 @@ export class UserModel {
       name: string;
       email: string;
       password: string;
+      role: 'customer' | 'partner';
     },
     options?: { connection?: mysql.Connection }
   ): Promise<UserModel> {
     const db = options?.connection ?? Database.getInstance();
 
-    const { name, email, password } = data;
+    const { name, email, password, role } = data;
 
     const createdAt = new Date();
     const hashedPassword = UserModel.hashPassword(password);
 
     const [userResult] = await db.execute<mysql.ResultSetHeader>(
-      "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)",
-      [name, email, hashedPassword, createdAt]
+      "INSERT INTO users (name, email, role, password, created_at) VALUES (?, ?, ?, ?, ?)",
+      [name, email, role, hashedPassword, createdAt]
     );
 
     const user = new UserModel({
@@ -107,6 +109,7 @@ export class UserModel {
     if (data.id !== undefined) this.id = data.id;
     if (data.name !== undefined) this.name = data.name;
     if (data.email !== undefined) this.email = data.email;
+    if (data.role !== undefined) this.role = data.role;
     if (data.password !== undefined) this.password = data.password;
     if (data.created_at !== undefined) this.created_at = data.created_at;
   }

@@ -7,11 +7,15 @@ import { PurchaseService } from "../services/purchase-service.ts";
 export const purchaseRouter = express.Router();
 
 purchaseRouter.post("/", async (req: Request, res: Response) => {
+    if (req.user!.role !== 'customer') {
+        return res.status(403).json({ error: "Only customers can make purchases" });
+    }
+
     const customerService = new CustomerService();
-    const customer = await customerService.findByUserId(req.user.id);
+    const customer = await customerService.findByUserId(req.user!.id);
 
     if (!customer) {
-        return res.status(400).json({ error: "User needs to be a customer to make a purchase" });
+        return res.status(400).json({ error: "Customer profile not found" });
     }
 
     const { ticket_ids, card_token } = req.body;

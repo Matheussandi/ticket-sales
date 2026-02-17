@@ -21,6 +21,7 @@ export class PartnerService {
           name,
           email,
           password,
+          role: 'partner',
         },
         { connection },
       );
